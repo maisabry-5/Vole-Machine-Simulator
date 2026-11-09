@@ -1,0 +1,25 @@
+SECTION:     39,40
+
+ZIP_FILE:    CS213_A2_Part2_S39_20242360_20250275_20250114_20250052.zip
+
+ID1:         20242360
+NAME1:       Mai Sabry Shappan Atiya
+FILES1:      []
+
+ID2:         20250275
+NAME2:       Sara Yasser Abdelmotelb
+FILES2:     []
+
+ID3:         20250114
+NAME3:       Baher Yasser Ayad
+FILES3:      []
+
+ID4:         20250052
+NAME4:       Ahmed Mohamed Ramadan
+FILES4:     []
+
+GITHUB:      
+
+VIDEO_DESIGN: 
+
+VIDEO_GUI:   
