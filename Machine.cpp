@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <limits>
+#include <vector>
 
 using namespace std;
 
@@ -32,11 +33,11 @@ int Machine::takeInput() {
     return choice;
 }
 
-void Machine::displayState() const {
+void Machine::displayState() {
     cout << "\n--- REGISTERS ---\n";
     for (int i = 0; i < 16; ++i) {
         cout << "R" << hex << uppercase << i << ": "
-            << const_cast <Register&>(registers).getValue(i) << "   ";
+            << const_cast <Register&>(registers).getvalue(i) << "   ";
         if ((i + 1) % 4 == 0) cout << "\n";
     }
     cout << "PC: " << hex << uppercase << setfill('0') << setw(2) << cpu.getPC() << "   ";
@@ -53,7 +54,7 @@ void Machine::displayState() const {
         cout << hex << uppercase << row << "  ";
         for (int col = 0; col < 16; ++col) {
             int addr = row * 16 + col;
-            cout << const_cast<Memory&>(memory).getCell(addr) << "   ";
+            cout << const_cast<Memory&>(memory).getcell(addr) << "   ";
         }
         cout << "\n";
     }
@@ -61,19 +62,19 @@ void Machine::displayState() const {
 
 void Machine::handleChoice(int choice) {
     if (choice == 1) {
-        string fileName, address;
+        string fileName;
+        int address;
         cout << "Enter the file name: ";
         cin >> fileName;
-        cout << "Enter the memory address to start loading the program at (Hex): ";
+        cout << "Enter the memory address to start loading (e.g., 0): ";
         cin >> address;
-
-        
-        if (loader.loadProgram(fileName, address, memory, cpu)) {
+        bool loaded = loader.load(fileName, address, memory);
+        if (loaded) {
             cout << "Program loaded successfully\n\n";
             isHalted = false;
         }
-        else {
-            cout << "Error loading file\n\n";
+         else {
+            cout << "Error loading program\n\n";
         }
     }
     else if (choice == 2) {

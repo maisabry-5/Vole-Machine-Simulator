@@ -3,7 +3,7 @@
 
 #include "Memory.h"
 #include "Register.h"
-#include "CPU.h"
+#include "vole_cpu.cpp"
 #include "Loader.h"
 #include <string>
 
@@ -18,7 +18,7 @@ private:
     void printMenu() const;
     int takeInput();
     void handleChoice(int choice);
-    void displayState() const;
+    void displayState();
 
 public:
     Machine();
