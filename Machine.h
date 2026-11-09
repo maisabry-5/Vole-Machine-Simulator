@@ -3,7 +3,7 @@
 
 #include "Memory.h"
 #include "Register.h"
-#include "vole_cpu.cpp"
+#include "vole_cpu.h"
 #include "Loader.h"
 #include <string>
 

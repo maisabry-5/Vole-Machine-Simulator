@@ -5,6 +5,8 @@
 #include <cmath>
 #include "Register.h"
 #include "Memory.h"
+#include "ALU.h"
+
 class Register { 
     public:
     int getvalue(int index) {return 0;}
