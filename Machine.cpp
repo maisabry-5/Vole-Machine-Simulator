@@ -1,66 +1,114 @@
-#include "Machine.h" 
+#include "Machine.h"
 #include <iostream>
+#include <iomanip>
+#include <limits>
 
 using namespace std;
 
-Machine::Machine() : cpu(registers, memory), isHalted(false) {
-}
+Machine::Machine() : cpu(registers, memory), isHalted(false) {}
 
 void Machine::printMenu() const {
-    cout << "\n==============================\n";
-    cout << "      Vole Machine Simulator  \n";
-    cout << "==============================\n";
-    cout << "1. Load Program from File\n";
-    cout << "2. Run Program (CPU Execution)\n";
-    cout << "3. Display Machine State (Memory & Registers)\n";
-    cout << "4. Exit\n";
+    cout << "\n=========================================\n";
+    cout << "         VOLE MACHINE SIMULATOR          \n";
+    cout << "=========================================\n";
+    cout << "1) Load Program\n";
+    cout << "2) Run Program\n";
+    cout << "3) Run Current Instruction\n";
+    cout << "4) Print State\n";
+    cout << "5) Exit\n";
+    cout << "Choice: ";
 }
 
 int Machine::takeInput() {
     int choice;
-    cout << "Enter your choice: ";
     cin >> choice;
+    while (cin.fail() || choice < 1 || choice > 5) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Invalid Input\n";
+        printMenu();
+        cin >> choice;
+    }
     return choice;
 }
 
 void Machine::displayState() const {
-    cout << "\n--- Current Machine State ---\n";
-    cout << "Program Counter (PC): " << cpu.getPC() << "\n";
-    cout << "Halted Status: " << (cpu.isHalted() ? "Yes" : "No") << "\n";
+    cout << "\n--- REGISTERS ---\n";
+    for (int i = 0; i < 16; ++i) {
+        cout << "R" << hex << uppercase << i << ": "
+            << const_cast <Register&>(registers).getValue(i) << "   ";
+        if ((i + 1) % 4 == 0) cout << "\n";
+    }
+    cout << "PC: " << hex << uppercase << setfill('0') << setw(2) << cpu.getPC() << "   ";
+    cout << "IR: " << cpu.getIR() << "\n";
+
+    cout << "\n--- MEMORY ---\n";
+    cout << "   ";
+    for (int i = 0; i < 16; ++i) {
+        cout << hex << uppercase << i << "    ";
+    }
+    cout << "\n";
+
+    for (int row = 0; row < 16; ++row) {
+        cout << hex << uppercase << row << "  ";
+        for (int col = 0; col < 16; ++col) {
+            int addr = row * 16 + col;
+            cout << const_cast<Memory&>(memory).getCell(addr) << "   ";
+        }
+        cout << "\n";
+    }
 }
 
 void Machine::handleChoice(int choice) {
-    switch (choice) {
-        case 1: {
-            string filename;
-            cout << "Enter program file name: ";
-            cin >> filename;
-            cout << "[Info] Program loaded successfully into memory!\n";
-            break;
+    if (choice == 1) {
+        string fileName, address;
+        cout << "Enter the file name: ";
+        cin >> fileName;
+        cout << "Enter the memory address to start loading the program at (Hex): ";
+        cin >> address;
+
+        
+        if (loader.loadProgram(fileName, address, memory, cpu)) {
+            cout << "Program loaded successfully\n\n";
+            isHalted = false;
         }
-        case 2: {
-            cpu.setPC(0);
-            cpu.run();
-            cout << "[Info] Program execution finished.\n";
-            break;
+        else {
+            cout << "Error loading file\n\n";
         }
-        case 3: {
-            displayState();
-            break;
+    }
+    else if (choice == 2) {
+        if (isHalted) {
+            cout << "Program already finished executing\n\n";
+            return;
         }
-        case 4:
-            cout << "Exiting simulator. Goodbye!\n";
-            break;
-        default:
-            cout << "Invalid choice! Please try again.\n";
+        cpu.run();
+        isHalted = true;
+        displayState();
+    }
+    else if (choice == 3) {
+        if (isHalted || cpu.isHalted()) {
+            cout << "Program already finished executing\n\n";
+            return;
+        }
+        cpu.step();
+        displayState();
+        if (cpu.isHalted()) {
+            isHalted = true;
+        }
+    }
+    else if (choice == 4) {
+        displayState();
+    }
+    else if (choice == 5) {
+        cout << "Exiting...\n";
+        exit(0);
     }
 }
 
 void Machine::run() {
-    int choice;
-    do {
+    while (true) {
         printMenu();
-        choice = takeInput();
+        int choice = takeInput();
         handleChoice(choice);
-    } while (choice != 4);
+    }
 }
